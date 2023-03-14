@@ -1,13 +1,34 @@
 <template>
-  <div>HELLO WORLD</div>
-  <div class="usa-alert usa-alert--info">
-  <div class="usa-alert__body">
-    <h4 class="usa-alert__heading">Informative status</h4>
-    <p class="usa-alert__text">
-      Lorem ipsum dolor sit amet,
-      <a class="usa-link" href="javascript:void(0);">consectetur adipiscing</a>
-      elit, sed do eiusmod.
-    </p>
+  <label class="usa-label" for="input-type-text"
+    >National Provider Identifier</label
+  >
+  <input class="usa-input" id="input-type-text" name="input-type-text" />
+  <label class="usa-label" for="input-focus">Text input focused</label>
+  <input class="usa-input usa-focus" id="input-focus" name="input-focus" />
+  <div class="usa-form-group usa-form-group--error">
+    <label class="usa-label usa-label--error" for="input-error"
+      >Text input error</label
+    >
+    <span class="usa-error-message" id="input-error-message" role="alert"
+      >Helpful error message</span
+    >
+    <input
+      class="usa-input usa-input--error"
+      id="input-error"
+      name="input-error"
+      aria-describedby="input-error-message"
+    />
   </div>
-</div>
+  <label class="usa-label" for="input-success">Text input success</label>
+  <input
+    class="usa-input usa-input--success"
+    id="input-success"
+    name="input-success"
+  />
+  <label class="usa-label" for="input-type-textarea">Text area label</label>
+  <textarea
+    class="usa-textarea"
+    id="input-type-textarea"
+    name="input-type-textarea"
+  ></textarea>
 </template>
