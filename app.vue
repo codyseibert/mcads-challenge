@@ -1,34 +1,28 @@
 <template>
-  <label class="usa-label" for="input-type-text"
-    >National Provider Identifier</label
-  >
-  <input class="usa-input" id="input-type-text" name="input-type-text" />
-  <label class="usa-label" for="input-focus">Text input focused</label>
-  <input class="usa-input usa-focus" id="input-focus" name="input-focus" />
-  <div class="usa-form-group usa-form-group--error">
-    <label class="usa-label usa-label--error" for="input-error"
-      >Text input error</label
+  <form>
+    <label class="usa-label npi-form-label" for="input-type-text"
+      >National Provider Identifier (NPI)</label
     >
-    <span class="usa-error-message" id="input-error-message" role="alert"
-      >Helpful error message</span
-    >
+    <span class="hint">For example "1234567890"</span>
+
     <input
-      class="usa-input usa-input--error"
-      id="input-error"
-      name="input-error"
-      aria-describedby="input-error-message"
+      class="usa-input"
+      type="text"
+      pattern="\d{10,10}"
+      id="input-type-text"
+      name="input-type-text"
     />
-  </div>
-  <label class="usa-label" for="input-success">Text input success</label>
-  <input
-    class="usa-input usa-input--success"
-    id="input-success"
-    name="input-success"
-  />
-  <label class="usa-label" for="input-type-textarea">Text area label</label>
-  <textarea
-    class="usa-textarea"
-    id="input-type-textarea"
-    name="input-type-textarea"
-  ></textarea>
+
+    <button type="submit" class="usa-button">Submit</button>
+  </form>
 </template>
+
+<style>
+.npi-form-label {
+  font-weight: bold;
+}
+
+.hint {
+  font-style: italic;
+}
+</style>
