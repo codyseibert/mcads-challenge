@@ -1,26 +1,22 @@
 <script setup lang="ts">
-const entries = ref([
-  {
-    npi: "123427482938",
-    timeSubmitted: "2011-10-05T14:48:00.000Z",
-  },
-  {
-    npi: "123427482938",
-    timeSubmitted: "2011-10-05T14:48:00.000Z",
-  },
-  {
-    npi: "123427482938",
-    timeSubmitted: "2011-10-05T14:48:00.000Z",
-  },
-]);
+import { getDentalClaims, type TDentalClaim } from '@/api/getDentalClaims';
+import { createDentalClaims } from '@/api/createDentalClaims';
 
-const addEntryToTable = (event) => {
-  const formData = new FormData(event.currentTarget);
-  entries.value.push({
-    ...Object.fromEntries(formData.entries()),
-    timeSubmitted: new Date().toISOString(),
-  } as any);
-};
+const entries = ref<TDentalClaim[]>([]);
+const isSuccessfulSubmit = ref(false);
+
+onMounted(async () => {
+  entries.value = await getDentalClaims();
+});
+
+// TODO: remove the any
+async function addEntryToTable(event: any) {
+  const formData = new FormData(event.target);
+  const createdNpi = await createDentalClaims(formData.get('npi') as string);
+  entries.value.push(createdNpi);
+  isSuccessfulSubmit.value = true;
+  event.target.reset();
+}
 </script>
 
 <template>
@@ -32,14 +28,8 @@ const addEntryToTable = (event) => {
     </label>
     <span class="text-italic">For example "1234567890"</span>
 
-    <input
-      class="usa-input"
-      type="text"
-      pattern="\d{10,10}"
-      id="input-type-text"
-      name="npi"
-    />
-    <div>Claim Submission Successful</div>
+    <input class="usa-input" type="text" pattern="\d{10}" id="npi" name="npi" />
+    <div v-if="isSuccessfulSubmit">Claim Submission Successful</div>
     <button type="submit" class="usa-button">Submit</button>
   </form>
 
