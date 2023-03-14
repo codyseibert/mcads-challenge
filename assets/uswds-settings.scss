@@ -1,1 +1,3 @@
-@use "uswds-core";
+@use 'uswds-core' with (
+  $theme-nothing: false
+);
