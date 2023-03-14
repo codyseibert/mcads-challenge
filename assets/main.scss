@@ -1,6 +1,0 @@
-@use 'uswds-core' with (
-  $theme-show-compile-warnings: false,
-  $theme-show-notifications: false
-);
-
-@forward './node_modules/@uswds/uswds/packages/uswds/_index.scss';
