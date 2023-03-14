@@ -29,7 +29,14 @@ async function addEntryToTable(event: Event) {
     </label>
     <span class="text-italic">For example "1234567890"</span>
 
-    <input class="usa-input" type="text" pattern="\d{10}" id="npi" name="npi" />
+    <input
+      class="usa-input"
+      type="text"
+      pattern="^\d{10}$"
+      required
+      id="npi"
+      name="npi"
+    />
     <div v-if="isSuccessMessageVisible">
       <Icon class="success" icon="material-symbols:check-circle" />
       Claim Submission Successful
