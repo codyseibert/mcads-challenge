@@ -24,3 +24,4 @@ uswds.paths.dist.theme = "./sass/uswds";
 exports.init = uswds.init;
 exports.compile = uswds.compile;
 exports.watch = uswds.watch;
+exports.copyAll = uswds.copyAll;
