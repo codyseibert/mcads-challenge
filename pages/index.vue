@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import { useGetDentalClaims } from '@/hooks/useGetDentalClaims';
 import { useCreateDentalClaims } from '@/hooks/useCreateDentalClaims';
 import { Icon } from '@iconify/vue';
 import { format, parseISO } from 'date-fns';
-import { TDentalClaim } from '~~/api/createDentalClaim';
+import { TDentalClaim } from '@/api/createDentalClaim';
 
 const isSuccessMessageVisible = ref(false);
 const { mutateAsync, isLoading: isSubmittingClaim } = useCreateDentalClaims();
@@ -23,13 +24,18 @@ async function addEntryToTable(event: Event) {
   formElement.reset();
 }
 
-function getFormattedEntries(entries: TDentalClaim[] = []) {
-  return entries.map((entry) => ({
-    ...entry,
-    timeSubmittedDate: format(parseISO(entry.timeSubmitted), 'MM/dd/yyyy'),
-    timeSubmittedTime: format(parseISO(entry.timeSubmitted), 'HH:mm:ss.SSS'),
-  }));
-}
+const formattedEntries = computed(() => {
+  return entries.value
+    ? entries.value.map((entry) => ({
+        ...entry,
+        timeSubmittedDate: format(parseISO(entry.timeSubmitted), 'MM/dd/yyyy'),
+        timeSubmittedTime: format(
+          parseISO(entry.timeSubmitted),
+          'HH:mm:ss.SSS'
+        ),
+      }))
+    : [];
+});
 </script>
 
 <template>
@@ -71,7 +77,7 @@ function getFormattedEntries(entries: TDentalClaim[] = []) {
         <th>Time Submitted</th>
       </tr>
     </thead>
-    <tr v-for="entry in getFormattedEntries(entries)">
+    <tr v-for="entry in formattedEntries">
       <td>{{ entry.npi }}</td>
       <td>{{ entry.timeSubmittedDate }}<br />{{ entry.timeSubmittedTime }}</td>
     </tr>
