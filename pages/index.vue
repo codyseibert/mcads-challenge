@@ -37,8 +37,6 @@ function getFormattedEntries(claims: TDentalClaim[] = []) {
     if (timeA > timeB) {
       return -1;
     }
-
-    // names must be equal
     return 0;
   });
 }
