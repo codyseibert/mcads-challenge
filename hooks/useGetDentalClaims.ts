@@ -1,11 +1,9 @@
 import { useQuery } from '@tanstack/vue-query';
-import { getContext } from '~~/context';
+import { applicationContext } from '@/api/applicationContext';
 
 export function useGetDentalClaims() {
-  const { api } = getContext();
-
   return useQuery({
     queryKey: ['dental-claims'],
-    queryFn: api.getDentalClaims,
+    queryFn: applicationContext().getDentalClaims,
   });
 }
