@@ -1,40 +1,51 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useGetDentalClaims } from '@/hooks/useGetDentalClaims';
 import { useCreateDentalClaims } from '@/hooks/useCreateDentalClaims';
 import { Icon } from '@iconify/vue';
 import { format, parseISO } from 'date-fns';
 import { TDentalClaim } from '~~/api/createDentalClaim';
 
+const npi = ref<string>()
 const isSuccessMessageVisible = ref(false);
 const { mutateAsync, isLoading: isSubmittingClaim } = useCreateDentalClaims();
 const {
-  data: entries,
+  data: claims,
   isLoading: isLoadingClaims,
   refetch,
 } = useGetDentalClaims();
 
-async function addEntryToTable(event: Event) {
+async function submitDentalClaim() {
   isSuccessMessageVisible.value = false;
-  const formElement = event.currentTarget as HTMLFormElement;
-  const formData = new FormData(formElement);
-  await mutateAsync(formData.get('npi') as string);
+  await mutateAsync(npi.value as string);
   refetch();
   isSuccessMessageVisible.value = true;
-  formElement.reset();
+  npi.value = "";
 }
 
-function getFormattedEntries(entries: TDentalClaim[] = []) {
-  return entries.map((entry) => ({
-    ...entry,
-    timeSubmittedDate: format(parseISO(entry.timeSubmitted), 'MM/dd/yyyy'),
-    timeSubmittedTime: format(parseISO(entry.timeSubmitted), 'HH:mm:ss.SSS'),
-  }));
+function getFormattedEntries(claims: TDentalClaim[] = []) {
+  return claims.map((claim) => ({
+    ...claim,
+    timeSubmittedDate: format(parseISO(claim.timeSubmitted), 'MM/dd/yyyy'),
+    timeSubmittedTime: format(parseISO(claim.timeSubmitted), 'HH:mm:ss.SSS'),
+  })).sort((a, b) => {
+    const timeA = a.timeSubmitted;
+    const timeB = b.timeSubmitted;
+    if (timeA < timeB) {
+      return 1;
+    }
+    if (timeA > timeB) {
+      return -1;
+    }
+    return 0;
+  });
 }
+
 </script>
 
 <template>
   <h1>Dental Claim Entry</h1>
-  <form @submit.prevent="addEntryToTable">
+  <form @submit.prevent="submitDentalClaim">
     <label class="usa-label text-bold" for="npi">
       National Provider Identifier (NPI)<br />
       <span class="text-normal">Item 49 - Form XX</span><br />
@@ -48,6 +59,7 @@ function getFormattedEntries(entries: TDentalClaim[] = []) {
       required
       id="npi"
       name="npi"
+      v-model="npi"
     />
     <div v-if="isSubmittingClaim">submitting your claim...</div>
     <div v-if="isSuccessMessageVisible">
@@ -71,9 +83,9 @@ function getFormattedEntries(entries: TDentalClaim[] = []) {
         <th>Time Submitted</th>
       </tr>
     </thead>
-    <tr v-for="entry in getFormattedEntries(entries)">
-      <td>{{ entry.npi }}</td>
-      <td>{{ entry.timeSubmittedDate }}<br />{{ entry.timeSubmittedTime }}</td>
+    <tr v-for="claim in getFormattedEntries(claims)" :key="claim.timeSubmitted">
+      <td>{{ claim.npi }}</td>
+      <td>{{ claim.timeSubmittedDate }}<br />{{ claim.timeSubmittedTime }}</td>
     </tr>
   </table>
 </template>
