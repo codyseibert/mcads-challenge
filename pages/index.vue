@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from 'vue';
 import { useGetDentalClaims } from '@/hooks/useGetDentalClaims';
 import { useCreateDentalClaims } from '@/hooks/useCreateDentalClaims';
 import { Icon } from '@iconify/vue';
 import { format, parseISO } from 'date-fns';
-import { TDentalClaim } from '~~/api/createDentalClaim';
+import { TDentalClaim } from '@/api/createDentalClaim';
 
-const npi = ref<string>()
+const npi = ref<string>();
 const isSuccessMessageVisible = ref(false);
 const { mutateAsync, isLoading: isSubmittingClaim } = useCreateDentalClaims();
 const {
@@ -20,27 +20,28 @@ async function submitDentalClaim() {
   await mutateAsync(npi.value as string);
   refetch();
   isSuccessMessageVisible.value = true;
-  npi.value = "";
+  npi.value = '';
 }
 
 function getFormattedEntries(claims: TDentalClaim[] = []) {
-  return claims.map((claim) => ({
-    ...claim,
-    timeSubmittedDate: format(parseISO(claim.timeSubmitted), 'MM/dd/yyyy'),
-    timeSubmittedTime: format(parseISO(claim.timeSubmitted), 'HH:mm:ss.SSS'),
-  })).sort((a, b) => {
-    const timeA = a.timeSubmitted;
-    const timeB = b.timeSubmitted;
-    if (timeA < timeB) {
-      return 1;
-    }
-    if (timeA > timeB) {
-      return -1;
-    }
-    return 0;
-  });
+  return claims
+    .map((claim) => ({
+      ...claim,
+      timeSubmittedDate: format(parseISO(claim.timeSubmitted), 'MM/dd/yyyy'),
+      timeSubmittedTime: format(parseISO(claim.timeSubmitted), 'HH:mm:ss.SSS'),
+    }))
+    .sort((a, b) => {
+      const timeA = a.timeSubmitted;
+      const timeB = b.timeSubmitted;
+      if (timeA < timeB) {
+        return 1;
+      }
+      if (timeA > timeB) {
+        return -1;
+      }
+      return 0;
+    });
 }
-
 </script>
 
 <template>
@@ -61,7 +62,9 @@ function getFormattedEntries(claims: TDentalClaim[] = []) {
       name="npi"
       v-model="npi"
     />
-    <div v-if="isSubmittingClaim">submitting your claim...</div>
+    <div role="alert" aria-busy="true" v-if="isSubmittingClaim">
+      submitting your claim...
+    </div>
     <div v-if="isSuccessMessageVisible">
       <Icon class="success" icon="material-symbols:check-circle" />
       Claim Submission Successful

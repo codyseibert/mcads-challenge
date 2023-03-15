@@ -7,16 +7,26 @@
     "dev": "run-p uswds-watch nuxt-watch",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "test": "vitest"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.0",
+    "@nuxt/test-utils": "^3.3.1",
+    "@testing-library/vue": "^7.0.0",
     "@types/date-fns": "^2.6.0",
     "@uswds/compile": "^1.0.0",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "@vue/test-utils": "^2.3.1",
+    "cross-fetch": "^3.1.5",
+    "jsdom": "^21.1.1",
+    "msw": "^1.1.0",
     "npm-run-all": "^4.1.5",
     "nuxt": "^3.3.1",
     "sass": "^1.59.2",
-    "sass-loader": "^13.2.0"
+    "sass-loader": "^13.2.0",
+    "ts-node": "^10.9.1",
+    "vitest": "^0.29.2"
   },
   "dependencies": {
     "@tanstack/vue-query": "^4.26.1",
