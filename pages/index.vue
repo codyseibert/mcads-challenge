@@ -1,28 +1,23 @@
 <script setup lang="ts">
-import { getDentalClaims, type TDentalClaim } from '@/api/getDentalClaims';
-import { createDentalClaims } from '@/api/createDentalClaims';
+import { ref } from 'vue'
+import { getDentalClaims, addDentalClaim } from '@/api/claimStateController';
 import { Icon } from '@iconify/vue';
 
-const entries = ref<TDentalClaim[]>([]);
+const claims = getDentalClaims();
+const npi = ref<String>();
 const isSuccessMessageVisible = ref(false);
 
-onMounted(async () => {
-  entries.value = await getDentalClaims();
-});
 
-async function addEntryToTable(event: Event) {
-  const formElement = event.currentTarget as HTMLFormElement;
-  const formData = new FormData(formElement);
-  const createdNpi = await createDentalClaims(formData.get('npi') as string);
-  entries.value.push(createdNpi);
+async function submitDentalClaim() {
+  await addDentalClaim(npi.value as string)
   isSuccessMessageVisible.value = true;
-  formElement.reset();
+  npi.value = "";
 }
 </script>
 
 <template>
   <h1>Dental Claim Entry</h1>
-  <form @submit.prevent="addEntryToTable">
+  <form @submit.prevent="submitDentalClaim">
     <label class="usa-label text-bold" for="npi">
       National Provider Identifier (NPI)<br />
       <span class="text-normal">Item 49 - Form XX</span>
@@ -36,6 +31,7 @@ async function addEntryToTable(event: Event) {
       required
       id="npi"
       name="npi"
+      v-model="npi"
     />
     <div v-if="isSuccessMessageVisible">
       <Icon class="success" icon="material-symbols:check-circle" />
@@ -55,9 +51,9 @@ async function addEntryToTable(event: Event) {
         <th>Time Submitted</th>
       </tr>
     </thead>
-    <tr v-for="entry in entries">
-      <th>{{ entry.npi }}</th>
-      <td>{{ entry.timeSubmitted }}</td>
+    <tr v-for="claim in claims" :key="claim.timeSubmitted">
+      <th>{{ claim.npi }}</th>
+      <td>{{ claim.timeSubmitted }}</td>
     </tr>
   </table>
 </template>
