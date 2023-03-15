@@ -1,22 +1,34 @@
 <script setup lang="ts">
-import { getDentalClaims, type TDentalClaim } from '@/api/getDentalClaims';
-import { createDentalClaims } from '@/api/createDentalClaims';
+import { useGetDentalClaims } from '@/hooks/useGetDentalClaims';
+import { useCreateDentalClaims } from '@/hooks/useCreateDentalClaims';
 import { Icon } from '@iconify/vue';
+import { format, parseISO } from 'date-fns';
+import { TDentalClaim } from '~~/api/createDentalClaim';
 
-const entries = ref<TDentalClaim[]>([]);
 const isSuccessMessageVisible = ref(false);
-
-onMounted(async () => {
-  entries.value = await getDentalClaims();
-});
+const { mutateAsync, isLoading: isSubmittingClaim } = useCreateDentalClaims();
+const {
+  data: entries,
+  isLoading: isLoadingClaims,
+  refetch,
+} = useGetDentalClaims();
 
 async function addEntryToTable(event: Event) {
+  isSuccessMessageVisible.value = false;
   const formElement = event.currentTarget as HTMLFormElement;
   const formData = new FormData(formElement);
-  const createdNpi = await createDentalClaims(formData.get('npi') as string);
-  entries.value.push(createdNpi);
+  await mutateAsync(formData.get('npi') as string);
+  refetch();
   isSuccessMessageVisible.value = true;
   formElement.reset();
+}
+
+function getFormattedEntries(entries: TDentalClaim[] = []) {
+  return entries.map((entry) => ({
+    ...entry,
+    timeSubmittedDate: format(parseISO(entry.timeSubmitted), 'MM/dd/yyyy'),
+    timeSubmittedTime: format(parseISO(entry.timeSubmitted), 'HH:mm:ss.SSS'),
+  }));
 }
 </script>
 
@@ -25,9 +37,9 @@ async function addEntryToTable(event: Event) {
   <form @submit.prevent="addEntryToTable">
     <label class="usa-label text-bold" for="npi">
       National Provider Identifier (NPI)<br />
-      <span class="text-normal">Item 49 - Form XX</span>
+      <span class="text-normal">Item 49 - Form XX</span><br />
+      <span class="text-normal text-italic">For example "1234567890"</span>
     </label>
-    <span class="text-italic">For example "1234567890"</span>
 
     <input
       class="usa-input"
@@ -37,32 +49,46 @@ async function addEntryToTable(event: Event) {
       id="npi"
       name="npi"
     />
+    <div v-if="isSubmittingClaim">submitting your claim...</div>
     <div v-if="isSuccessMessageVisible">
       <Icon class="success" icon="material-symbols:check-circle" />
       Claim Submission Successful
     </div>
-    <button type="submit" class="usa-button">Submit</button>
+    <button :disabled="isSubmittingClaim" type="submit" class="usa-button">
+      Submit
+    </button>
   </form>
 
   <hr />
 
   <h2>Submitted Claim history</h2>
 
-  <table class="usa-table">
+  <div v-if="isLoadingClaims">loading...</div>
+  <table v-else class="usa-table width-full">
     <thead>
       <tr>
         <th>NPI</th>
         <th>Time Submitted</th>
       </tr>
     </thead>
-    <tr v-for="entry in entries">
-      <th>{{ entry.npi }}</th>
-      <td>{{ entry.timeSubmitted }}</td>
+    <tr v-for="entry in getFormattedEntries(entries)">
+      <td>{{ entry.npi }}</td>
+      <td>{{ entry.timeSubmittedDate }}<br />{{ entry.timeSubmittedTime }}</td>
     </tr>
   </table>
 </template>
 
 <style scoped>
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+form button {
+  align-self: flex-start;
+}
+
 .success {
   color: green;
 }
