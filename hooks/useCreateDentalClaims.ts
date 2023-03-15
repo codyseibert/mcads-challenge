@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/vue-query';
-import { createDentalClaim } from '~~/api/createDentalClaim';
+import { applicationContext } from '~~/api/applicationContext';
 
 export function useCreateDentalClaims() {
   return useMutation({
     mutationKey: ['create-claims'],
-    mutationFn: createDentalClaim,
+    mutationFn: applicationContext().createDentalClaim,
   });
 }
