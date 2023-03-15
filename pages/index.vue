@@ -6,7 +6,7 @@ import { Icon } from '@iconify/vue';
 import { format, parseISO } from 'date-fns';
 import { TDentalClaim } from '@/api/createDentalClaim';
 
-const npi = ref<string>();
+const npi = ref<string>('');
 const isSuccessMessageVisible = ref(false);
 const { mutateAsync, isLoading: isSubmittingClaim } = useCreateDentalClaims();
 const {
@@ -17,7 +17,7 @@ const {
 
 async function submitDentalClaim() {
   isSuccessMessageVisible.value = false;
-  await mutateAsync(npi.value as string);
+  await mutateAsync(npi.value);
   refetch();
   isSuccessMessageVisible.value = true;
   npi.value = '';
@@ -30,17 +30,7 @@ function getFormattedEntries(claims: TDentalClaim[] = []) {
       timeSubmittedDate: format(parseISO(claim.timeSubmitted), 'MM/dd/yyyy'),
       timeSubmittedTime: format(parseISO(claim.timeSubmitted), 'HH:mm:ss.SSS'),
     }))
-    .sort((a, b) => {
-      const timeA = a.timeSubmitted;
-      const timeB = b.timeSubmitted;
-      if (timeA < timeB) {
-        return 1;
-      }
-      if (timeA > timeB) {
-        return -1;
-      }
-      return 0;
-    });
+    .sort((a, b) => b.timeSubmitted.localeCompare(a.timeSubmitted));
 }
 </script>
 
