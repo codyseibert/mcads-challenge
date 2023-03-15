@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useGetDentalClaims } from '@/hooks/useGetDentalClaims';
 import { useCreateDentalClaims } from '@/hooks/useCreateDentalClaims';
 import { Icon } from '@iconify/vue';
 import { format, parseISO } from 'date-fns';
-import { TDentalClaim } from '@/api/createDentalClaim';
 
 const isSuccessMessageVisible = ref(false);
 const { mutateAsync, isLoading: isSubmittingClaim } = useCreateDentalClaims();
@@ -24,18 +23,13 @@ async function addEntryToTable(event: Event) {
   formElement.reset();
 }
 
-const formattedEntries = computed(() => {
-  return entries.value
-    ? entries.value.map((entry) => ({
-        ...entry,
-        timeSubmittedDate: format(parseISO(entry.timeSubmitted), 'MM/dd/yyyy'),
-        timeSubmittedTime: format(
-          parseISO(entry.timeSubmitted),
-          'HH:mm:ss.SSS'
-        ),
-      }))
-    : [];
-});
+function formatDate(isoDate: string) {
+  return format(parseISO(isoDate), 'MM/dd/yyyy');
+}
+
+function formatTime(isoDate: string) {
+  return format(parseISO(isoDate), 'HH:mm:ss.SSS');
+}
 </script>
 
 <template>
@@ -55,7 +49,9 @@ const formattedEntries = computed(() => {
       id="npi"
       name="npi"
     />
-    <div v-if="isSubmittingClaim">submitting your claim...</div>
+    <div role="alert" aria-busy="true" v-if="isSubmittingClaim">
+      submitting your claim...
+    </div>
     <div v-if="isSuccessMessageVisible">
       <Icon class="success" icon="material-symbols:check-circle" />
       Claim Submission Successful
@@ -77,9 +73,13 @@ const formattedEntries = computed(() => {
         <th>Time Submitted</th>
       </tr>
     </thead>
-    <tr v-for="entry in formattedEntries">
+    <tr v-for="entry in entries">
       <td>{{ entry.npi }}</td>
-      <td>{{ entry.timeSubmittedDate }}<br />{{ entry.timeSubmittedTime }}</td>
+      <td>
+        {{ formatDate(entry.timeSubmitted) }}<br />{{
+          formatTime(entry.timeSubmitted)
+        }}
+      </td>
     </tr>
   </table>
 </template>
