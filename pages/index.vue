@@ -25,8 +25,7 @@ async function submitDentalClaim() {
 }
 
 const formattedClaims = computed(() => {
-  if (!claims.value) return [];
-  return [...claims.value]
+  return [...claims.value!]
     .map((claim) => ({
       ...claim,
       timeSubmittedDate: format(parseISO(claim.timeSubmitted), 'MM/dd/yyyy'),
