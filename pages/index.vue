@@ -1,18 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useGetDentalClaims } from '@/hooks/useGetDentalClaims';
-import { useCreateDentalClaims } from '@/hooks/useCreateDentalClaims';
+import { ref, computed } from 'vue';
+import { useGetDentalClaims } from '~~/hooks/useGetDentalClaims';
+import { useCreateDentalClaims } from '~~/hooks/useCreateDentalClaims';
 import { Icon } from '@iconify/vue';
 import { format, parseISO } from 'date-fns';
-import { TDentalClaim } from '@/api/createDentalClaim';
 
 const npi = ref<string>('');
 const isSuccessMessageVisible = ref(false);
 const { mutateAsync, isLoading: isSubmittingClaim } = useCreateDentalClaims();
+
 const {
   data: claims,
   isLoading: isLoadingClaims,
   refetch,
+  isRefetching: isRefreshingClaims,
 } = useGetDentalClaims();
 
 async function submitDentalClaim() {
@@ -23,15 +24,16 @@ async function submitDentalClaim() {
   npi.value = '';
 }
 
-function getFormattedEntries(claims: TDentalClaim[] = []) {
-  return claims
+const formattedClaims = computed(() => {
+  console.log('we are here', claims.value);
+  return [...claims.value]
     .map((claim) => ({
       ...claim,
       timeSubmittedDate: format(parseISO(claim.timeSubmitted), 'MM/dd/yyyy'),
       timeSubmittedTime: format(parseISO(claim.timeSubmitted), 'HH:mm:ss.SSS'),
     }))
     .sort((a, b) => b.timeSubmitted.localeCompare(a.timeSubmitted));
-}
+});
 </script>
 
 <template>
@@ -55,6 +57,7 @@ function getFormattedEntries(claims: TDentalClaim[] = []) {
     <div role="alert" aria-busy="true" v-if="isSubmittingClaim">
       submitting your claim...
     </div>
+
     <div v-if="isSuccessMessageVisible">
       <Icon class="success" icon="material-symbols:check-circle" />
       Claim Submission Successful
@@ -68,6 +71,7 @@ function getFormattedEntries(claims: TDentalClaim[] = []) {
 
   <h2>Submitted Claim history</h2>
 
+  <div v-if="isRefreshingClaims">refreshing claims...</div>
   <div v-if="isLoadingClaims">loading...</div>
   <table v-else class="usa-table width-full">
     <thead>
@@ -76,7 +80,10 @@ function getFormattedEntries(claims: TDentalClaim[] = []) {
         <th>Time Submitted</th>
       </tr>
     </thead>
-    <tr v-for="claim in getFormattedEntries(claims)" :key="claim.timeSubmitted">
+    <tr
+      v-for="claim in formattedClaims"
+      :key="`${claim.npi}-${claim.timeSubmitted}`"
+    >
       <td>{{ claim.npi }}</td>
       <td>{{ claim.timeSubmittedDate }}<br />{{ claim.timeSubmittedTime }}</td>
     </tr>

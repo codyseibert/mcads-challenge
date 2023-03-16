@@ -1,7 +1,17 @@
 import { render, fireEvent } from '@testing-library/vue';
-import { test, expect } from 'vitest';
+import { vi, test, expect, beforeEach } from 'vitest';
 import Component from '../pages/index.vue';
 import { VueQueryPlugin } from '@tanstack/vue-query';
+
+beforeEach(() => {
+  vi.mock('~~/hooks/getRuntimeConfig', () => ({
+    getRuntimeConfig: () => ({
+      public: {
+        useMock: true,
+      },
+    }),
+  }));
+});
 
 test('a user can not submit a claim with an invalid NPI', async () => {
   const wrapper = render(Component, {
@@ -49,3 +59,7 @@ test('newly submitted claims will be appended to the table below', async () => {
   });
   expect(cell).toBeDefined();
 });
+
+// TODO: write a test that verifies the sort order of the table rows
+
+// TODO: write a test that verifies the ui loads with the expected data from the api

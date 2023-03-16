@@ -12,5 +12,5 @@ export async function createDentalClaim(npi: string) {
     headers: {
       'Content-Type': 'application/json',
     },
-  }).then((response) => response.json());
+  }).then((response) => response.json()) as Promise<TDentalClaim>;
 }
