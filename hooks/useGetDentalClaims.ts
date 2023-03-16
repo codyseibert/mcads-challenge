@@ -5,6 +5,5 @@ export function useGetDentalClaims() {
   return useQuery({
     queryKey: ['dental-claims'],
     queryFn: applicationContext().getDentalClaims,
-    initialData: [],
   });
 }

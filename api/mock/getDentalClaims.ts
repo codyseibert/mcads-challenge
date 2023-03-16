@@ -16,5 +16,5 @@ export const claims = [
 ] as TDentalClaim[];
 
 export async function getDentalClaims() {
-  return claims;
+  return [...claims];
 }

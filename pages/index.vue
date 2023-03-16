@@ -25,6 +25,7 @@ async function submitDentalClaim() {
 }
 
 const formattedClaims = computed(() => {
+  if (!claims.value) return [];
   return [...claims.value]
     .map((claim) => ({
       ...claim,

@@ -5,4 +5,8 @@ export default defineNuxtConfig({
       useMock: true,
     },
   },
+  ssr: false,
+  nitro: {
+    preset: 'service-worker',
+  },
 });
